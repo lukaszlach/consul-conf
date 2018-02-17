@@ -1,0 +1,7 @@
+.idea/
+docker/data
+composer.phar
+bin/tini
+src/tpl/**/*.phtml.php
+vendor/
+TODO.md

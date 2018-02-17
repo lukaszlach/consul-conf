@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  consul-conf:
+    volumes:
+      - ./bin:/consul-conf/bin
+      - ./src:/consul-conf/src
+      - ./vendor:/consul-conf/vendor

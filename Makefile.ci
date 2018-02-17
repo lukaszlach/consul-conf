@@ -1,0 +1,23 @@
+.PHONY:
+
+start:
+	docker run -d \
+        -p 8080:80 \
+        -v /etc/consul-conf:/etc/consul-conf \
+        -e CONSUL_API_URL=http://localhost:8500 \
+        --name consul_conf \
+        consul-conf:latest
+
+stop:
+	docker stop consul_conf || true
+	docker rm consul_conf || true
+
+docker-compose-start:
+	docker-compose -f docker-compose-example.yml up -d --force-recreate
+
+test:
+	docker exec consul_conf ps aux
+	docker exec consul_conf env
+	docker exec consul_conf /consul-conf/bin/docker-health-check.sh || true
+	docker exec consul_conf curl -fv http://localhost/
+	docker logs consul_conf

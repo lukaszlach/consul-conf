@@ -1,0 +1,83 @@
+stages:
+  - build
+  - test_stage1
+  - test_stage2
+  - release
+
+before_script:
+  - docker_login.sh || true
+  - docker login -u "$DOCKER_LOGIN" -p "$DOCKER_PASSWORD"
+  - make -f Makefile.ci stop
+
+build:docker:
+  stage: build
+  script:
+    - make BUILD_ID="`date +%Y%m%d`"
+
+test:lint:
+  stage: test_stage1
+  before_script:
+  script:
+    - find bin -name "*.sh" -exec docker run --rm -v `pwd`:/srv -w /srv
+        koalaman/shellcheck --shell sh --color always -e SC2006,SC2016,SC2039,SC2145,SC1117,SC1091,SC2002 {} \;
+  dependencies:
+  allow_failure: true
+
+test:simple-run:
+  stage: test_stage1
+  script:
+    - make -f Makefile.ci start
+    - sleep 3
+    - make -f Makefile.ci test
+  dependencies:
+
+test:docker-compose:
+  stage: test_stage1
+  script:
+    - make -f Makefile.ci docker-compose-start
+    - sleep 3
+    - make -f Makefile.ci test
+  dependencies:
+
+test:auto-install:
+  stage: test_stage2
+  script:
+    - export DOCKER_PULL_IMAGE=0
+    - docker tag consul-conf:latest lukaszlach/consul-conf:latest
+    - curl -sS file://`pwd`/install | bash
+    # because of VOLUME
+    - docker exec consul_conf mkdir -p /etc/consul-conf/ssh
+    - echo -n "$TEST_CONSUL_CONF_CONF" > /tmp/consul-conf.conf
+    - docker cp /tmp/consul-conf.conf consul_conf:/etc/consul-conf/consul-conf.conf
+    - cp /tmp/consul-conf.conf /etc/consul-conf/consul-conf.conf
+    - consul-conf-stop
+    - consul-conf-start
+    - docker ps
+    - make -f Makefile.ci test
+  dependencies:
+    - test:simple-run
+
+cleanup:
+  stage: release
+  before_script:
+  script:
+    - make -f Makefile.ci stop
+  when: manual
+
+release:docker-local:
+  stage: release
+  script:
+    - make local-push
+  when: manual
+
+release:docker-version:
+  stage: release
+  script:
+    - make version-push
+  when: manual
+
+release:docker-latest:
+  stage: release
+  script:
+    - make push
+  when: manual

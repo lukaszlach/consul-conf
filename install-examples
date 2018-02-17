@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Consul.conf examples
+# (c) 2018 Łukasz Lach <llach@llach.pl>
+## set CONSUL_CONF_VERSION to install examples from target version
+## set CONSUL_API_URL to set different Consul HTTP API endpoint
+## set CONSUL_ACL_TOKEN if custom Consul ACL token is needed
+set -e
+PROJECT_NAME=Consul.conf
+PROJECT_VERSION=${CONSUL_CONF_VERSION:-latest}
+EXAMPLES_CONSUL_BASE_PATH=consul-conf-examples
+CONSUL_API_URL="${CONSUL_API_URL:-http://localhost:8500}"
+consul_kv_set_base64 () {
+    local CONSUL_KEY="$1"
+    local VALUE="`echo "$2" | base64 -D`"
+    curl -sSfk -m 3 -X PUT -d "$VALUE" -H "X-Consul-Token: $CONSUL_ACL_TOKEN" -o /dev/null \
+        "$CONSUL_API_URL/v1/kv/$CONSUL_KEY"
+}
+consul_kv_delete_path () {
+    local CONSUL_PATH="$1"
+    curl -sSfk -m 3 -X DELETE -H "X-Consul-Token: $CONSUL_ACL_TOKEN" -o /dev/null \
+        "$CONSUL_API_URL/v1/kv/$CONSUL_PATH?recurse=true"
+}
+log () { echo -e "\033[0;30m->\033[0m $@"; }
+
+log "Configuring"
+log "    Consul API:    $CONSUL_API_URL"
+log "    k/v base path: $EXAMPLES_CONSUL_BASE_PATH/"
+log "Deleting $EXAMPLES_CONSUL_BASE_PATH/"
+consul_kv_delete_path "$EXAMPLES_CONSUL_BASE_PATH/"
+log "Installing $PROJECT_NAME examples"
+while IFS=$' ' read -r key value; do
+    log "Setting $EXAMPLES_CONSUL_BASE_PATH/$key"
+    consul_kv_set_base64 "$EXAMPLES_CONSUL_BASE_PATH/$key" "$value"
+# /consul-conf/bin/consul-get-all-values.sh dashboard-1 | jq -r 'to_entries[] | [.key, .value] | @tsv' | sed 's/\t/ /g'
+done << EOF
+dashboard-1/.dashboard/.config ewogICJuYW1lIjogIkF1dGhlbnRpY2F0aW9uIHNlcnZlciAoT0F1dGgpIiwKICAiZGVzY3JpcHRpb24iOiAiKipUaGlzIGlzIGEgcHJvZHVjdGlvbiBjb25maWd1cmF0aW9uLioqXG5cbktlZXAgY2F1dGlvbiB3aGVuIGVkaXRpbmcgZmllbGRzIG1hcmtlZCB3aXRoICoqcmVkIGNvbG9yKiosIHRoZXNlIGFyZSBpbXBvcnRhbnQgaW4gdGVybXMgb2Ygb3ZlcmFsbCBzeXN0ZW0gc3RhYmlsaXR5LiBQcm9qZWN0IGluZm9ybWF0aW9uOlxuXG4qIEN1cnJlbnQgdmVyc2lvbjogMS4wXG4qIFdlYnNpdGU6IGh0dHBzOi8vd3d3LnByb2plY3QuY29tL1xuKiBDb250YWN0OiBpdEBwcm9qZWN0LmNvbSIsCiAgImljb24iOiAibG9jayIsCiAgImNvbG9yIjogInN0eWxpc2gtY29sb3IiCn0=
+dashboard-1/.dashboard/access_token_ttl ewogICJuYW1lIjogIkFjY2VzcyB0b2tlbiBUVEwiLAogICJkZXNjcmlwdGlvbiI6ICJTZXR0aW5nIHRvbyBsb3cgdmFsdWUgKip3aWxsIGNhdXNlIGFkZGl0aW9uYWwgdHJhZmZpYyBvbiB3ZWIgc2VydmVycyoqIGJlY2F1c2Ugb2YgZXhjaGFuZ2luZyByZWZyZXNoIHRva2Vucy4iLAogICJ0eXBlIjogInNlbGVjdCIsCiAgIm9wdGlvbnMiOiBbIjFoIiwgIjNoIiwgIjZoIiwgIjEyaCIsICIyNGgiXSwKICAiaWNvbiI6ICJjbG9jay1vIiwKICAiZGVmYXVsdCI6ICI2aCIKfQ==
+dashboard-1/.dashboard/default_redirect_uri ewogICJuYW1lIjogIkRlZmF1bHQgcmVkaXJlY3QgVVJJIiwKICAidHlwZSI6ICJ0ZXh0IiwKICAiaWNvbiI6ICJtYWlsLXJlcGx5LWFsbCIsCiAgImRlZmF1bHQiOiAiaHR0cHM6Ly93d3cucHJvamVjdC5jb20vIiwKICAiaGlkZGVuIjogdHJ1ZQp9
+dashboard-1/.dashboard/default_scope ewogICJuYW1lIjogIkRlZmF1bHQgc2NvcGUiLAogICJkZXNjcmlwdGlvbiI6ICJBbGwgcmV0dXJuZWQgYWNjZXNzLXRva2VucyB3aWxsIGJlIGdpdmVuIGF0IGxlYXN0IHRoaXMgc2NvcGUuIiwKICAidHlwZSI6ICJzZWxlY3QiLAogICJvcHRpb25zIjogWyJub25lIiwgInJlYWQtdXNlciIsICJyZWFkLXVzZXIgKyB3cml0ZS11c2VyIl0sCiAgImljb24iOiAiY3ViZXMiLAogICJjb2xvciI6ICJyZWQiLAogICJkZWZhdWx0IjogIm5vbmUiLAogICJyZWFkb25seSI6IHRydWUKfQ==
+dashboard-1/.dashboard/pre_shared_key ewogICJuYW1lIjogIlByZS1zaGFyZWQgc2VjcmV0IGtleSIsCiAgImRlc2NyaXB0aW9uIjogIkNoYW5naW5nIHRoaXMgdmFsdWUgYmVmb3JlIHJlbGVhc2luZyBuZXcgY2xpZW50IHZlcnNpb24gaXMgKipmb3JiaWRkZW4qKi4iLAogICJ0eXBlIjogInRleHQiLAogICJpY29uIjogInVubG9jayIsCiAgImNvbG9yIjogInJlZCIsCiAgImRlZmF1bHQiOiAiODg0MGZiMzYiLAogICJyZWFkb25seSI6IGZhbHNlCn0=
+dashboard-1/.dashboard/return_refresh_token ewogICJuYW1lIjogIlJldHVybiByZWZyZXNoIHRva2VuIiwKICAiZGVzY3JpcHRpb24iOiAiV2hldGhlciB0byByZXR1cm4gcmVmcmVzaCB0b2tlbiBhbG9uZyB3aXRoIGFjY2VzcyB0b2tlbiBhZnRlciBzdWNjZXNzZnVsIGxvZ2luLiIsCiAgInR5cGUiOiAiY2hlY2tib3giLAogICJpY29uIjogImhlYXJ0YmVhdCIsCiAgImRlZmF1bHQiOiB0cnVlCn0=
+dashboard-1/.dashboard/two_factor ewogICJuYW1lIjogIlR3by1mYWN0b3IgYXV0aGVudGljYXRpb24iLAogICJkZXNjcmlwdGlvbiI6ICIqKkZvcmNpbmcqKiB0d28tZmFjdG9yIGF1dGhlbnRpY2F0aW9uIHdpbGwgYWZmZWN0IGFsbCB1c2Vycy4iLAogICJ0eXBlIjogInNlbGVjdCIsCiAgIm9wdGlvbnMiOiBbImZvcmNlZCIsICJlbmFibGVkIiwgImRpc2FibGVkIl0sCiAgImljb24iOiAibW9iaWxlIiwKICAiZGVmYXVsdCI6ICJlbmFibGVkIgp9
+dashboard-1/access_token_ttl MTJo
+dashboard-1/default_redirect_uri aHR0cHM6Ly93d3cucHJvamVjdC5jb20v
+dashboard-1/default_scope bm9uZQ==
+dashboard-1/pre_shared_key ODIwOTdkMTA=
+dashboard-1/return_refresh_token dHJ1ZQ==
+dashboard-1/two_factor ZW5hYmxlZA==
+dashboard-2/.dashboard/.config ewogICAgICAgICJuYW1lIjogIlByb2plY3QgZGFzaGJvYXJkIiwKICAgICAgICAiZGVzY3JpcHRpb24iOiAiQ2hhbmdlICoqcHJvZHVjdGlvbioqIHNldHRpbmdzIG9uIHRoaXMgZGFzaGJvYXJkLlxuXG5WaXNpdCBodHRwczovL3d3dy5wcm9qZWN0LmNvbS8gdG8gbW9uaXRvciB5b3VyIGNoYW5nZXMgaW4gYWN0aW9uLiIsCiAgICAgICAgImNvbG9yIjogImRlZXAtb3JhbmdlIiwKICAgICAgICAiaWNvbiI6ICJjb2dzIiwKICAgICAgICAiaGlkZGVuIjogZmFsc2UsCiAgICAgICAgImhpZGVfdW5jb25maWd1cmVkIjogZmFsc2UKICAgIH0=
+dashboard-2/.dashboard/checkbox-key ewogICAgICAgICJuYW1lIjogIkV4YW1wbGUgY2hlY2tib3gga2V5IiwKICAgICAgICAidHlwZSI6ICJjaGVja2JveCIsCiAgICAgICAgImRlc2NyaXB0aW9uIjogIioqSW1wb3J0YW50IGtleSoqIGZvciBzeXN0ZW0gc3RhYmlsaXR5LiIsCiAgICAgICAgImRlZmF1bHQiOiB0cnVlLAogICAgICAgICJjb2xvciI6ICJibHVlIiwKICAgICAgICAiaWNvbiI6ICJwbGFuZSIsCiAgICAgICAgInJlYWRvbmx5IjogdHJ1ZSwKICAgICAgICAiaGlkZGVuIjogZmFsc2UKICAgIH0=
+dashboard-2/.dashboard/select-key ewogICAgICAgICJuYW1lIjogIkV4YW1wbGUgb3B0aW9uIGtleSIsCiAgICAgICAgInR5cGUiOiAic2VsZWN0IiwKICAgICAgICAib3B0aW9ucyI6IFsib3B0aW9uMSIsICJvcHRpb24yIiwgIm9wdGlvbjMiXSwKICAgICAgICAiZGVzY3JpcHRpb24iOiAiU2VlIGh0dHBzOi8vcHJvamVjdC5jb20vZG9jcyNzZWxlY3Qta2V5IGZvciBkZXRhaWxzLiIsCiAgICAgICAgImRlZmF1bHQiOiAib3B0aW9uMSIsCiAgICAgICAgImNvbG9yIjogImdyZWVuIiwKICAgICAgICAiaWNvbiI6ICJsZWFmIiwKICAgICAgICAicmVhZG9ubHkiOiBmYWxzZSwKICAgICAgICAiaGlkZGVuIjogZmFsc2UKICAgIH0=
+dashboard-2/.dashboard/text-key ewogICAgICAgICJuYW1lIjogIkV4YW1wbGUgdGV4dCBrZXkiLAogICAgICAgICJ0eXBlIjogInRleHQiLAogICAgICAgICJkZXNjcmlwdGlvbiI6ICJBbnkgc3RyaW5nIHZhbHVlIGlzIGFjY2VwdGVkIGhlcmUuIiwKICAgICAgICAiZGVmYXVsdCI6ICJ2YWx1ZSIsCiAgICAgICAgImNvbG9yIjogInJlZCIsCiAgICAgICAgImljb24iOiAiaGVhcnQiLAogICAgICAgICJyZWFkb25seSI6IGZhbHNlLAogICAgICAgICJoaWRkZW4iOiBmYWxzZQogICAgfQ==
+dashboard-2/checkbox-key ZmFsc2U=
+dashboard-2/select-key b3B0aW9uMg==
+dashboard-2/text-key dmFsdWU=
+EOF
+
+printf "\033[1;30m\n"
+echo "$PROJECT_NAME $PROJECT_VERSION examples installed successfully."
+printf "\n\033[0m"
+exit 0

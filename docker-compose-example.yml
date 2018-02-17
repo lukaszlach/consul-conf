@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  consul-conf:
+    image: consul-conf:latest
+    container_name: consul_conf
+    ports:
+      - 80
+    environment:
+      - CONSUL_API_URL=http://localhost:8500

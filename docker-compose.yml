@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  consul-conf:
+    build: .
+    image: consul-conf:latest
+    container_name: consul_conf
+    hostname: consul-conf.docker
+    ports:
+      - 80:80
+    environment:
+      - HTTP_PORT=80
+      - HTTPS_PORT=443
+      - HTTP_ALLOW=0.0.0.0/0
+      - CRYPT_KEY=A3oj5abcadegkfgj2Vh
+      - CONSUL_API_URL=http://consul:8500
+      - CONSUL_ACL_TOKEN=
+      - BASIC_AUTH=admin:admin
+      - LDAP_ENABLED=false
+      - LDAP_URL=ldaps://ldap-server.com:636
+      - LDAP_ATTR_UID=uid
+      - LDAP_BIND_DN=ou=users,ou=team,dc=company
+      - NOTIFY_HIPCHAT=0
+      - HIPCHAT_API=https://hipchat.server.com
+      - HIPCHAT_ROOM=123
+      - HIPCHAT_TOKEN=XTlyCeYH8rFhgjA4sJ8tu8UBnYhrmFOTPr5gM3J0
+      - NOTIFY_SLACK=0
+      - SLACK_ROOM=dev
+      - SLACK_URL=https://hooks.slack.com/services/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
+    depends_on:
+      - consul
+
+  consul:
+    image: consul:1.0.6
+    container_name: consul_dashboard__consul
+    hostname: consul.consul-conf.docker
+    volumes:
+      - ./docker/data/consul/data:/consul/data
+      - ./docker/data/consul/config:/consul/config
+    ports:
+      - 8500:8500
+    command: ["consul", "agent", "-server", "-ui", "-bind", "0.0.0.0", "-client", "0.0.0.0", "-data-dir", "/consul/data", "-config-dir", "/consul/config", "-bootstrap", "-datacenter", "docker"]

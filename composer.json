@@ -1,0 +1,8 @@
+{
+  "require": {
+    "erusev/parsedown": "1.6.*"
+  },
+  "require-dev": {
+    "phalcon/ide-stubs": "3.3.*"
+  }
+}

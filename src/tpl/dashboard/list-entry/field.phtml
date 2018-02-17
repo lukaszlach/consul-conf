@@ -1,0 +1,83 @@
+<!--Grid column-->
+<div class="col col-12 col-sm-6 col-lg-4 mb-4 field-col filter-col">
+    <!--Panel-->
+    <div class="card field-card filter-card">
+        <div class="text-right card-buttons">
+            <a class="btn btn-sm field-edit-button" data-toggle="tooltip" data-placement="top" title="Customize"><i class="fa fa-paint-brush grey-text"></i></a>
+            <a class="btn btn-sm field-cancel-button d-none" data-toggle="tooltip" data-placement="top" title="Cancel"><i class="fa fa-undo red-text"></i></a>
+            <a class="btn btn-sm field-save-button" data-toggle="tooltip" data-placement="top" title="Save"><i class="fa fa-save green-text"></i></a>
+            <span class="icon fa fa-edit {{ dashboardEntity.getColor()|e|default('grey') }}-text edited-icon"></span>
+        </div>
+        <div class="card-body">
+            <h4 class="card-title">
+                {% if fieldEntity.getIcon() is not empty %}
+                <i class="fa fa-{{ fieldEntity.getIcon()|e }} {{ fieldEntity.getColor()|e|default(dashboardEntity.getColor()|e|default('black')) }}-text"></i>
+                {% endif %}
+                {{ fieldEntity.getName()|e|default(fieldEntity.getVisibleKey()|e) }}
+                <!-- allow filtering by key name -->
+                <span class="d-none">{{ fieldEntity.getVisibleKey()|e }}</span>
+            </h4>
+            <p class="card-text mb-0" style="min-height: 3.5rem">
+                {{ fieldEntity.getVisibleDescription() }}
+            </p>
+            <form class="md-form mb-0">
+                <?php $fieldName = $fieldEntity->getKey(); ?>
+                {% if fieldEntity.getType() == "select" %}
+                <?php $selectOptions  = (array)$fieldEntity->get('options'); ?>
+                <?php $selectHasValue = in_array($fieldEntity->getValue(), $selectOptions, true); ?>
+                <select name="{{ fieldName|e }}" class="form-control mt-2 field-input-select" data-value="{{ fieldEntity.getValue()|e }}" {% if fieldEntity.isReadOnly() %} disabled{% endif %}>
+                    <option value="{{ fieldEntity.getValue()|e }}"
+                        {% if not selectHasValue %}
+                        selected
+                        {% else %}
+                        disabled
+                        {% endif %}
+                        >
+                        {% if selectHasValue %}
+                        (select from available values)
+                        {% elseif fieldEntity.getValue() is not empty %}
+                        (currently invalid value "{{ fieldEntity.getValue()|e }}")
+                        {% else %}
+                        (currently empty)
+                        {% endif %}
+                    </option>
+                    {% for selectOption in selectOptions %}
+                    <option value="{{ selectOption|e }}"
+                        {% if fieldEntity.getValue() == selectOption %}
+                        selected
+                        {% endif %}
+                        >{{ selectOption|e }}</option>
+                    {% endfor %}
+                </select>
+                {% elseif fieldEntity.getType() == "checkbox" %}
+                <?php $checkboxId = 'checkbox-'.uniqid(); ?>
+                <div class="form-group form-checkbox mb-4 mt-2">
+                    <input type="checkbox" name="" value="true" data-value="{% if fieldEntity.getValue() === "true" %}true{% else %}false{% endif %}" id="{{ checkboxId }}" class="form-control field-input-checkbox" {% if fieldEntity.isReadOnly() %} disabled{% endif %}{% if fieldEntity.getValue() === "true" %} checked{% endif %}>
+                    <label for="{{ checkboxId }}">Select to enable</label>
+                    <input type="hidden" name="{{ fieldName|e }}" id="{{ checkboxId }}-value"/>
+                </div>
+                {% else %}
+                <i class="fa fa-angle-right prefix grey-text"></i>
+                <input name="{{ fieldName|e }}" type="text" value="{{ fieldEntity.getValue()|e }}" data-value="{{ fieldEntity.getValue()|e }}" id="{{ fieldEntity.getId() }}" class="form-control mb-2 field-input-text"{% if fieldEntity.isReadOnly() %} disabled{% endif %}>
+                {% endif %}
+            </form>
+            <div class="flex-row text-right card-meta">
+                {% if fieldEntity.isReadOnly() %}
+                <span class="badge grey lighten-1 ml-2">Read-only</span>
+                {% endif %}
+                {% if fieldEntity.getDefault() !== null %}
+                <span class="badge grey lighten-1 ml-2">Default:
+                    <?php if (is_string($fieldEntity->getDefault())): ?>
+                    {{ fieldEntity.getDefault()|e }}
+                    <?php else: ?>
+                    <?php echo trim(json_encode($fieldEntity->getDefault()), '"') ?: '(empty)'; ?>
+                    <?php endif; ?>
+                </span>
+                {% else %}
+                &nbsp;
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!--/.Panel-->
+</div>

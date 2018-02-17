@@ -1,0 +1,116 @@
+nav input[type=text]:focus:not([readonly]) {
+    border-bottom: 1px solid #3E4551;
+    box-shadow: 0 1px 0 0 #3E4551;
+}
+main input[type=text]:focus:not([readonly]) {
+    border-bottom: 1px solid #212121;
+    box-shadow: 0 1px 0 0 #212121;
+}
+main .prefix.active {
+    color: #212121 !important;
+}
+.card-buttons {
+    position: absolute;
+    width: 100%;
+    padding-top: 0.3rem;
+    padding-right: 0.6rem;
+}
+.card-buttons .btn {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+}
+.navbar-brand small {
+    font-size: 65%;
+}
+.navbar .btn-icon {
+    padding-right: 0.9rem;
+    padding-left: 0.9rem;
+    min-width: 41px;
+}
+.navbar .btn {
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+}
+.navbar-brand .icon {
+    padding-right: 0.4rem;
+}
+.form-checkbox input {
+    position: relative;
+    top: 1.05rem;
+}
+.form-checkbox label {
+    left: 1.5rem;
+}
+.card,
+.card-flex {
+    height: 100%;
+}
+.navbar-title {
+    font-size: 1.8rem;
+}
+.field-card .card-buttons .btn,
+.edited-icon {
+    display: none;
+}
+.field-card:hover .card-buttons .btn {
+    -display: inline-block;
+}
+.field-card.edited .edited-icon {
+    display: inline-block;
+}
+main {
+    margin-bottom: 2rem;
+}
+footer {
+    display: block !important;
+    position: fixed !important;
+    bottom: 0;
+    width: 100%;
+    z-index: 2;
+}
+footer .copyright-text {
+    font-size: 0.8rem;
+}
+footer a,
+footer a:hover {
+    color: #eeeeee;
+    text-decoration: underline;
+    text-decoration-color: #9e9e9e;
+}
+.big-icon {
+    position: absolute;
+    zoom: 8;
+    opacity:  0.17;
+    right: 0.5rem;
+    bottom: -0.6rem;
+}
+.no-dashboards-row {
+    margin-top: 6rem;
+}
+.no-dashboards-row .card {
+    min-width: 100%;
+}
+.container-fluid {
+    margin-top: 6rem;
+    margin-bottom: 3rem;
+}
+.card-meta .badge {
+    font-weight: 400;
+}
+.alert {
+    position: absolute;
+    top: 5rem;
+    right: 1rem;
+    height: auto;
+    padding: 0.25rem 0.5rem;
+    max-width: 20rem;
+}
+.save-all-button {
+    position: absolute;
+    margin-top: 0;
+}
+.message-card {
+    min-height: 130px;
+}

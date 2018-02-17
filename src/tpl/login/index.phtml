@@ -1,0 +1,73 @@
+{{ partial('common/nav', ['hide_filter': true]) }}
+
+<!--Main layout-->
+<main>
+
+    <!--Main container-->
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col-12 col-md-6 offset-md-3 col-xl-4 offset-xl-4">
+                <div class="d-flex justify-content-center card-flex">
+                    <!--Panel-->
+                    <div class="card field-card" style="width: 100%;">
+                        <!-- Form login -->
+                        <form class="card-body login-form">
+                            <i class="fa fa-lock big-icon grey-text"></i>
+                            <h4 class="card-title black-text">
+                                Log in
+                                {% if config.isLdapEnabled() %}
+                                <small class="login-mark-ldap grey-text">(LDAP)</small>
+                                {% endif %}
+                            </h4>
+                            <hr class="my-2">
+                            <p class="card-text mb-4">
+                                Log in to list and view individual dashboards.
+                                Optionally pass Consul ACL token to use instead of default one.
+                            </p>
+
+                            <div class="md-form">
+                                <i class="fa fa-user prefix grey-text"></i>
+                                <input type="text" id="uid" name="uid" class="form-control">
+                                <label for="uid">Username</label>
+                            </div>
+                            <div class="md-form">
+                                <i class="fa fa-lock prefix grey-text"></i>
+                                <input type="password" id="password" name="password" class="form-control">
+                                <label for="password">Password</label>
+                            </div>
+                            <div class="md-form">
+                                <i class="fa fa-unlock prefix grey-text"></i>
+                                <input type="password" id="acl" name="acl" class="form-control">
+                                <label for="acl">Consul ACL token (optional)</label>
+                            </div>
+
+                            <div class="text-center">
+                                <button class="btn btn-dark-green login-button">Login</button>
+                            </div>
+                        </form>
+                        <!-- Form login -->
+                    </div>
+                    <!--/.Panel-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+{{ partial('common/footer') }}
+
+<script type="text/javascript">
+    $('.login-button').click(function(e) {
+        e.preventDefault();
+        var urlParameters = $('.login-form').serialize();
+        $.post(document.location, urlParameters, function (data) {
+            if (true !== data) {
+                showAlert('Invalid username or password.', 'error');
+
+                return;
+            }
+            document.location = '/d';
+        });
+    });
+</script>

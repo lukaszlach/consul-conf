@@ -1,0 +1,54 @@
+{% if dashboardEntity is not defined %}
+<nav class="navbar navbar-dark fixed-top navbar-expand-lg stylish-color">
+{% else %}
+<nav class="navbar navbar-dark fixed-top navbar-expand-lg {{ dashboardEntity.getColor()|e|default('stylish-color') }}">
+{% endif %}
+    <div class="navbar-brand mr-4 white-text">
+        {% if dashboardEntity is not defined %}
+        <div class="navbar-title">
+            <i class="fa fa-globe icon"></i>
+            {{ config.getEnv('PROJECT_NAME') }}
+            <small class="d-none">{{ config.getEnv('PROJECT_VERSION') }}</small>
+        </div>
+        {% else %}
+        <div class="navbar-title">
+            <a class="white-text" href="/d" data-toggle="tooltip" data-placement="bottom" title="Index">
+                <i class="fa fa-{{ dashboardEntity.getIcon()|e|default('dashboard') }} icon"></i>
+            </a>
+            <span class="white-text">
+                {{ dashboardEntity.getName()|default('Dashboard')|e }}
+            </span>
+            <a class="btn btn-green ml-4 save-all-button d-none" href="#"><i class="fa fa-save"></i> Save</a>
+        </div>
+        {% endif %}
+    </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <div class="mr-auto"></div>
+        <div class="navbar-nav">
+            {% if dashboardEntity is not defined and not hide_buttons and user.isLoggedIn() %}
+            <div class="nav-item d-none">
+                <a class="btn" href="#"><i class="fa fa-plus"></i> Create dashboard</a>
+            </div>
+            <div class="nav-item d-none">
+                <a class="btn" href="#"><i class="fa fa-gear"></i> Settings</a>
+            </div>
+            {% endif %}
+            {% if not hide_filter %}
+            <form class="form-inline waves-effect waves-light mr-2" style="float: left">
+                <i class="fa fa-search prefix white-text"></i>
+                <input class="form-control mr-sm-2 white-text filter-input" type="text">
+            </form>
+            {% endif %}
+            <div class="nav-item">
+                <a class="btn btn-icon help-button" href="{{ config.getEnv('PROJECT_HELP_URL') }}" data-toggle="tooltip" data-placement="bottom" title="Help"><i class="fa fa-question"></i></a>
+                {% if user.isLoggedIn() and user.canLogIn() %}
+                <a class="btn btn-icon logout-button" href="/logout" data-toggle="tooltip" data-placement="bottom" title="Logout"><i class="fa fa-unlock"></i></a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</nav>

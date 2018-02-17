@@ -1,0 +1,16 @@
+SHELL := /bin/bash -x
+CD ?= /consul-conf
+MAKE := $(MAKE) -f Makefile.docker
+
+.PHONY: build clean
+
+build:
+	rm -rf vendor/
+	composer install -n --no-dev
+	find ${CD}
+	${MAKE} clean
+
+clean:
+	rm -f \
+		$(CD)/composer.* \
+		$(CD)/Makefile.docker

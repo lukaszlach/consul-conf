@@ -1,0 +1,49 @@
+{{ partial('common/nav') }}
+<!--Main layout-->
+<main>
+
+    <!--Main container-->
+    <div class="container-fluid">
+        <!--Grid row-->
+        <div class="row mr-4 ml-4 fields-row">
+            {% for dashboardEntity in dashboardCollection.getAll() %}
+            {% if not dashboardEntity.isHidden() %}
+            {{ partial('dashboard/list-entry/dashboard', ['dashboardEntity': dashboardEntity]) }}
+            {% endif %}
+            {% endfor %}
+            {% if dashboardCollection.count() == 0 and not consul_kv.isReachable() %}
+            <!--Grid column-->
+            <div class="col col-12 col-md-6 col-xl-4 mb-4">
+                <!--Panel-->
+                <div class="card message-card">
+                    <div class="card-body" style="overflow: hidden">
+                        <i class="fa fa-times big-icon red-text"></i>
+                        <p class="card-text mb-0">
+                            Your Consul HTTP API under <strong>{{ config.getEnv('CONSUL_API_URL')|e }}</strong> is not reachable from inside of this Docker container. Read "Troubleshooting guide" in <a href="{{ config.getEnv('PROJECT_HELP_URL') }}">{{ config.getEnv('PROJECT_NAME') }} documentation</a>.
+                        </p>
+                    </div>
+                </div>
+                <!--/.Panel-->
+            </div>
+            {% elseif dashboardCollection.count() == 0 %}
+            <!--Grid column-->
+            <div class="col col-12 col-md-6 col-xl-4 mb-4">
+                <!--Panel-->
+                <div class="card message-card">
+                    <div class="card-body" style="overflow: hidden">
+                        <i class="fa fa-eye-slash big-icon black-text"></i>
+                        <p class="card-text mb-0">
+                            No dashboards were found in your Consul key-value storage.
+                            See <a href="{{ config.getEnv('PROJECT_HELP_URL') }}">{{ config.getEnv('PROJECT_NAME') }} documentation</a> on how to create your first dashboard, customize it and it's fields.
+                        </p>
+                    </div>
+                </div>
+                <!--/.Panel-->
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+    <!--Main container-->
+
+</main>

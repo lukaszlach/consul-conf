@@ -1,0 +1,18 @@
+<!--Grid column-->
+<div class="col col-12 col-md-6 col-xl-4 mb-4 filter-col">
+    <!--Panel-->
+    <a class="card filter-card" href="/d/{{ dashboardEntity.getPath() }}">
+        <div class="card-body" style="overflow: hidden">
+            <i class="fa fa-{{ dashboardEntity.getIcon()|e|default('dashboard') }} big-icon {{ dashboardEntity.getColor()|e|default('black') }}-text"></i>
+            <h4 class="card-title black-text">
+                {{ dashboardEntity.getName()|e|default('Dashboard') }}
+            </h4>
+            <div class="my-2 text-truncate grey-text">
+                {{ dashboardEntity.getPath() }}
+            </div>
+            <p class="card-text mb-0">
+            </p>
+        </div>
+    </a>
+    <!--/.Panel-->
+</div>
