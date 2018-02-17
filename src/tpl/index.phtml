@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>{{ config.getEnv('PROJECT_NAME') }} {{ config.getEnv('PROJECT_VERSION') }}</title>
+    <!-- CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/css/mdb.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <!-- SCRIPTS -->
+    <!-- JQuery -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Popper -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.10.1/umd/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+{{ content() }}
+
+<!--Card Alert-->
+<div class="alert card lighten-1 text-center z-depth-2 d-none">
+    <div class="card-body">
+        <p class="white-text text-left mb-0" style="white-space: pre-line;"><b class="alert-severity"></b>
+            <span></span></p>
+    </div>
+</div>
+<!--/.Card Alert-->
+
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.4.3/js/mdb.js"></script>
+<!-- Consul.conf core -->
+<script type="text/javascript" src="/js/consul-conf.js"></script>
+</body>
+
+</html>

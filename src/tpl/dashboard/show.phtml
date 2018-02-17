@@ -1,0 +1,28 @@
+{{ partial('common/nav') }}
+
+<!--Main layout-->
+<main>
+
+<!--Main container-->
+<div class="container-fluid">
+
+    <!--Grid row-->
+    <div class="row mr-4 ml-4 fields-row">
+        {% if dashboardEntity.getDescription() is not empty %}
+        {{ partial('dashboard/list-entry/dashboard-description', ['dashboardEntity': dashboardEntity]) }}
+        {% endif %}
+        {% for fieldEntity in fieldCollection.getAll() %}
+        {% if dashboardEntity.isHidingUnconfigured() and not fieldEntity.isConfigured() %}
+            {% continue %}
+        {% endif %}
+        {% if fieldEntity.isInternal() or not fieldEntity.isVisible() %}
+            {% continue %}
+        {% endif %}
+        {{ partial('dashboard/list-entry/field', ['fieldEntity': fieldEntity, 'dashboardEntity': dashboardEntity]) }}
+        {% endfor %}
+    </div>
+
+</div>
+<!--Main container-->
+
+</main>

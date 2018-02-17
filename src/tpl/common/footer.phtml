@@ -1,0 +1,10 @@
+{% if dashboardEntity is defined %}
+<footer class="navbar text-right {{ dashboardEntity.getColor()|e|default('stylish-color') }}">
+{% else %}
+<footer class="navbar text-right stylish-color">
+{% endif %}
+    <span class="white-text copyright-text">
+        v{{ config.getEnv('PROJECT_VERSION') }},
+        <i class="icon fa fa-copyright"></i> {{ config.getEnv('PROJECT_COPYRIGHT_YEAR') }} <a href="https://github.com/lukaszlach">Łukasz Lach</a>
+    </span>
+</footer>
